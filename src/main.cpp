@@ -2,40 +2,14 @@
 #include <cstring>
 #include <bit>
 #include <vector>
+#include <bitset>
 
 #include "types.h"
 #include "position.h"
 #include "util.h"
+#include "bitboard.h"
 
 namespace gelato {
-
-
-///////////
-// DEBUG //
-///////////
-
-namespace bitboard {
-
-    std::string Pretty(U64 bitboard) {
-        std::string s = "  +---+---+---+---+---+---+---+---+\n";
-        for (int rank = 0; rank < 8; rank++) {
-            s += std::to_string(8 - rank) + " ";
-            for (int file = 0; file < 8; file++) {
-                // convert file & rank into square index
-                int square = rank * 8 + file;
-                s += bitboard & get_bit(bitboard, square) ? "| X " : "|   ";
-            }
-
-            s += "| \n  +---+---+---+---+---+---+---+---+\n";
-        }
-
-        s += "    a   b   c   d   e   f   g   h\n";
-
-        return s;
-
-    }
-}
-
 
 //////////
 // BITS //
@@ -92,7 +66,6 @@ U64 GetRandomU64Number() {
 U64 GenMagicNumber() {
     return GetRandomU64Number() & GetRandomU64Number() & GetRandomU64Number();
 }
-
 
 /////////////
 // ATTACKS //
@@ -191,7 +164,7 @@ U64 MaskPawnAttacks(Side side, Square square) {
     U64 attacks = C64(0);
     U64 bitboard = C64(0);
 
-    set_bit(bitboard, square);
+    bitboard::SetBit(bitboard, square);
 
     if (side == Side::White) {
         if ((bitboard >> 7) & not_a_file)
@@ -213,7 +186,7 @@ U64 MaskKnightAttacks(Square square) {
     U64 attacks = C64(0);
     U64 bitboard = C64(0);
 
-    set_bit(bitboard, square);
+    bitboard::SetBit(bitboard, square);
 
     if ((bitboard >> 17) & not_h_file)
         attacks |= (bitboard >> 17);
@@ -241,7 +214,7 @@ U64 MaskKingAttacks(Square square) {
     U64 attacks = C64(0);
     U64 bitboard = C64(0);
 
-    set_bit(bitboard, square);
+    bitboard::SetBit(bitboard, square);
 
     if (bitboard >> 8)
         attacks |= (bitboard >> 8);
@@ -270,8 +243,8 @@ U64 MaskBishopAttacks(Square square) {
 
     int r,f;
 
-    int tr = square / 8;
-    int tf = square % 8;
+    int tr = GetRank(square);
+    int tf = GetFile(square);
 
     // maks relevent bishop occupancy bits
     for (r = tr + 1, f = tf + 1; r <= 6 && f <= 6; r++, f++)
@@ -291,8 +264,8 @@ U64 MaskRookAttacks(Square square) {
 
     int r,f;
 
-    int tr = square / 8;
-    int tf = square % 8;
+    int tr = GetRank(square);
+    int tf = GetFile(square);
 
     // maks relevent bishop occupancy bits
     for (r = tr + 1; r <= 6; r++)
@@ -312,8 +285,8 @@ U64 BishopAttacksOnTheFly(Square square, U64 block) {
 
     int r,f;
 
-    int tr = square / 8;
-    int tf = square % 8;
+    int tr = GetRank(square);
+    int tf = GetFile(square);
 
     // generate bishop attack
     for (r = tr + 1, f = tf + 1; r <= 7 && f <= 7; r++, f++) {
@@ -341,8 +314,8 @@ U64 RookAttacksOnTheFly(Square square, U64 block) {
 
     int r,f;
 
-    int tr = square / 8;
-    int tf = square % 8;
+    int tr = GetRank(square);
+    int tf = GetFile(square);
 
     // maks relevent bishop ocycupancy bits
     for (r = tr + 1; r <= 7; r++) {
@@ -393,7 +366,7 @@ U64 SetOccupancy(int index, int bits_in_mask, U64 attack_mask) {
     for (int count = 0; count < bits_in_mask; count++) {
         int square = GetLsfbIndex(attack_mask);
 
-        pop_bit(attack_mask, square);
+        bitboard::PopBit(attack_mask, (Square)square);
 
         // make sure occupancey is on board
         if (index & (1 << count))
@@ -469,61 +442,15 @@ int main() {
     InitSlidersAttacks(PieceType::Rook);
     InitSlidersAttacks(PieceType::Bishop);
 
-    Position position;
-
-    // white pawns
-    set_bit(position.bitboards[Piece::P], Square::A2);
-    set_bit(position.bitboards[Piece::P], Square::B2);
-    set_bit(position.bitboards[Piece::P], Square::C2);
-    set_bit(position.bitboards[Piece::P], Square::D2);
-    set_bit(position.bitboards[Piece::P], Square::E2);
-    set_bit(position.bitboards[Piece::P], Square::F2);
-    set_bit(position.bitboards[Piece::P], Square::G2);
-    set_bit(position.bitboards[Piece::P], Square::H2);
-
-    // white knights
-    set_bit(position.bitboards[Piece::N], Square::B1);
-    set_bit(position.bitboards[Piece::N], Square::G1);
-
-    // white bishops
-    set_bit(position.bitboards[Piece::B], Square::C1);
-    set_bit(position.bitboards[Piece::B], Square::F1);
-
-    // white rooks
-    set_bit(position.bitboards[Piece::R], Square::A1);
-    set_bit(position.bitboards[Piece::R], Square::H1);
-
-    // king and queen
-    set_bit(position.bitboards[Piece::K], Square::E1);
-    set_bit(position.bitboards[Piece::Q], Square::D1);
-
-    // white pawns
-    set_bit(position.bitboards[Piece::p], Square::A7);
-    set_bit(position.bitboards[Piece::p], Square::B7);
-    set_bit(position.bitboards[Piece::p], Square::C7);
-    set_bit(position.bitboards[Piece::p], Square::D7);
-    set_bit(position.bitboards[Piece::p], Square::E7);
-    set_bit(position.bitboards[Piece::p], Square::F7);
-    set_bit(position.bitboards[Piece::p], Square::G7);
-    set_bit(position.bitboards[Piece::p], Square::H7);
-
-    // white knights
-    set_bit(position.bitboards[Piece::n], Square::B8);
-    set_bit(position.bitboards[Piece::n], Square::G8);
-
-    // white bishops
-    set_bit(position.bitboards[Piece::b], Square::C8);
-    set_bit(position.bitboards[Piece::b], Square::F8);
-
-    // white rooks
-    set_bit(position.bitboards[Piece::r], Square::A8);
-    set_bit(position.bitboards[Piece::r], Square::H8);
-
-    // king and queen
-    set_bit(position.bitboards[Piece::k], Square::E8);
-    set_bit(position.bitboards[Piece::q], Square::D8);
+    Position position(FEN_PAPA);
 
     std::cout << position << std::endl;
+
+    U64 occupancy = position.occupancies[Side::Both];
+
+    std::cout << bitboard::Pretty(occupancy) << std::endl;
+
+    std::cout << bitboard::Pretty(position.bitboards[Piece::b]);
 
     return 0;
 }
