@@ -8,7 +8,7 @@ std::string GetCoordinatesFromSquare(Square s) {
 };
 
 bool ValidateFen(const std::string &fen) {
-    return std::regex_match(fen, std::regex("\\s*([rnbqkpRNBQKP1-8]+\\/){7}([rnbqkpRNBQKP1-8]+)\\s[bw-]\\s(([a-hkqA-HKQ]{1,4})|(-))\\s(([a-h][36])|(-))\\s\\d+\\s\\d+\\s*"));
+    return std::regex_match(fen, std::regex("\\s*([rnbqkpRNBQKP1-8]+\\/){7}([rnbqkpRNBQKP1-8]+)\\s[bw-]\\s(([a-hkqA-HKQ]{1,4})|(-))\\s(([a-h][36])|(-))[\\s\\d+\\s\\d+]?\\s*"));
 }
 
 const std::map<char, Piece> CharToPiece = {

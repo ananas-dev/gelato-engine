@@ -442,15 +442,9 @@ int main() {
     InitSlidersAttacks(PieceType::Rook);
     InitSlidersAttacks(PieceType::Bishop);
 
-    Position position(FEN_PAPA);
+    Position position("8/8/8/3p4/8/8/8/8 w - - ");
 
     std::cout << position << std::endl;
-
-    U64 occupancy = position.occupancies[Side::Both];
-
-    std::cout << bitboard::Pretty(occupancy) << std::endl;
-
-    std::cout << bitboard::Pretty(position.bitboards[Piece::b]);
 
     return 0;
 }

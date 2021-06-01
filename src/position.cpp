@@ -26,7 +26,6 @@ void Position::Clear() {
 void Position::LoadFen(std::string fen) {
     this->Clear();
     if (ValidateFen(fen)) {
-        // TODO: fen sanitizer
         this->fen = fen;
 
         std::regex whiteSpace("\\s+");
