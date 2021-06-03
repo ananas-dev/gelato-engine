@@ -29,24 +29,31 @@ void Position::LoadFen(std::string fen) {
         this->fen = fen;
 
         std::regex whiteSpace("\\s+");
+        std::regex slash("/");
 
         // a number between 1 and 8
         std::string oneToEight = "12345678";
         std::string asciiPiece = "PNBRQKpnbrqk";
 
-        std::sregex_token_iterator begin(fen.begin(), fen.end(), whiteSpace, -1);
-        std::sregex_token_iterator end;
+        std::sregex_token_iterator tokensBegin(fen.begin(), fen.end(), whiteSpace, -1);
+        std::sregex_token_iterator tokensEnd;
+        std::vector<std::string> tokens(tokensBegin, tokensEnd);
 
-        std::vector<std::string> tokens(begin, end);
+        std::sregex_token_iterator piecePlacementTokensBegin(tokens[Fen::PiecePlacement].begin(), tokens[Fen::PiecePlacement].end(), slash, -1);
+        std::sregex_token_iterator piecePlacementTokensEnd;
+        std::vector<std::string> piecePlacementTokens(piecePlacementTokensBegin, piecePlacementTokensEnd);
 
-        int square = Square::H8;
-
-        for (const char &piecePlacement: tokens[Fen::PiecePlacement]) {
-            if (asciiPiece.find(piecePlacement) != std::string::npos) {
-                bitboard::SetBit(this->bitboards[CharToPiece.at(piecePlacement)], (Square)square);
-                square--;
-            } else if (oneToEight.find(piecePlacement) != std::string::npos) {
-                square -= piecePlacement - '0';
+        for (int rank = Rank::Rank8; rank >= Rank::Rank1; rank--) {
+            int square = Square::A1;
+            int file = File::File1;
+            for (const char &piecePlacement: piecePlacementTokens[Rank::Rank8 - rank]) {
+                square = GetSquare((Rank)rank, (File)file);
+                if (asciiPiece.find(piecePlacement) != std::string::npos) {
+                    bitboard::SetBit(this->bitboards[CharToPiece.at(piecePlacement)], (Square)square);
+                    file++;
+                } else if (oneToEight.find(piecePlacement) != std::string::npos) {
+                    file += piecePlacement - '0';
+                }
             }
         }
 

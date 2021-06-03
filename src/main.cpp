@@ -167,15 +167,15 @@ U64 MaskPawnAttacks(Side side, Square square) {
     bitboard::SetBit(bitboard, square);
 
     if (side == Side::White) {
-        if ((bitboard >> 7) & not_a_file)
-            attacks |= (bitboard >> 7);
-        if ((bitboard >> 9) & not_h_file)
-            attacks |= (bitboard >> 9);
-    } else if(side == Side::Black) {
         if ((bitboard << 7) & not_h_file)
             attacks |= (bitboard << 7);
         if ((bitboard << 9) & not_a_file)
             attacks |= (bitboard << 9);
+    } else if(side == Side::Black) {
+        if ((bitboard >> 7) & not_a_file)
+            attacks |= (bitboard >> 7);
+        if ((bitboard >> 9) & not_h_file)
+            attacks |= (bitboard >> 9);
     }
 
     return attacks;
@@ -442,9 +442,14 @@ int main() {
     InitSlidersAttacks(PieceType::Rook);
     InitSlidersAttacks(PieceType::Bishop);
 
-    Position position("8/8/8/3p4/8/8/8/8 w - - ");
+    Position position(FEN_KILLER_POSITION);
 
     std::cout << position << std::endl;
+    /*
+    std::cout << bitboard::Pretty(position.bitboards[Piece::p]);
+    std::cout << bitboard::Pretty(pawn_attacks[Side::Black][Square::E4]);
+    std::cout << position.bitboards[Piece::p] << std::endl;
+    */
 
     return 0;
 }
