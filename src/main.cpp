@@ -428,6 +428,27 @@ static inline U64 GetRookAttacks(Square square, U64 occupancy) {
     return rook_attacks[square][occupancy];
 }
 
+static inline U64 GetQueenAttacks(Square square, U64 occupancy) {
+    U64 queenAttacks = C64(0);
+
+    U64 bishopOccupancy = occupancy;
+    U64 rookOccupancy = occupancy;
+
+    bishopOccupancy &= bishop_masks[square];
+    bishopOccupancy *= bishop_magics[square];
+    bishopOccupancy >>= 64 - bishop_relevant_bits[square];
+
+    queenAttacks = bishop_attacks[square][bishopOccupancy];
+
+    rookOccupancy &= rook_masks[square];
+    rookOccupancy *= rook_magics[square];
+    rookOccupancy >>= 64 - rook_relevant_bits[square];
+
+    queenAttacks |= rook_attacks[square][rookOccupancy];
+
+    return queenAttacks;
+}
+
 } // namespace gelato
 
 //////////
@@ -442,14 +463,12 @@ int main() {
     InitSlidersAttacks(PieceType::Rook);
     InitSlidersAttacks(PieceType::Bishop);
 
-    Position position(FEN_KILLER_POSITION);
+    Position position("8/8/8/3p4/8/8/8/8 w - - ");
 
     std::cout << position << std::endl;
-    /*
     std::cout << bitboard::Pretty(position.bitboards[Piece::p]);
-    std::cout << bitboard::Pretty(pawn_attacks[Side::Black][Square::E4]);
     std::cout << position.bitboards[Piece::p] << std::endl;
-    */
+    //std::cout << bitboard::Pretty(pawn_attacks[Side::White][Square::E4]);
 
     return 0;
 }
