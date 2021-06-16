@@ -3,11 +3,9 @@
 #include <string>
 #include "types.h"
 
-namespace gelato
-{
+namespace gelato {
 
-namespace bitboard
-{
+namespace bitboard {
 
 // bit operations
 U64 GetBit(U64 bitboard, Square square);

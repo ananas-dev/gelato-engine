@@ -1,4 +1,9 @@
+#include <vector>
+#include <regex>
+
 #include "position.h"
+#include "util.h"
+#include "bitboard.h"
 
 namespace gelato {
 

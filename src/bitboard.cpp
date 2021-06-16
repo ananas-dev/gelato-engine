@@ -1,10 +1,8 @@
 #include "bitboard.h"
 
-namespace gelato
-{
+namespace gelato {
 
-namespace bitboard
-{
+namespace bitboard {
 
 U64 GetBit(U64 bitboard, Square square) {
     return bitboard & (C64(1) << square);

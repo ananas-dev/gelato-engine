@@ -1,13 +1,9 @@
 #pragma once
 
 #include <iostream>
-#include <vector>
-#include <regex>
 #include <string>
 #include <array>
 #include "types.h"
-#include "util.h"
-#include "bitboard.h"
 
 namespace gelato {
 
@@ -26,14 +22,12 @@ public:
     // no castle by default
     Castle castle = Castle(0b0000);
 
-    std::string fen = "";
+    std::string fen;
 
     void Clear();
     void LoadFen(std::string fen);
 
     friend std::ostream &operator<<(std::ostream &stream, const Position position);
-
-private:
-    std::string asciiPieces = "PNBRQKpnbrqk";
 };
+
 } // namespace gelato
