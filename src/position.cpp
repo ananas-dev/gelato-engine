@@ -30,7 +30,7 @@ void Position::Clear() {
 
 void Position::LoadFen(std::string fen) {
     this->Clear();
-    if (ValidateFen(fen)) {
+    if (util::ValidateFen(fen)) {
         this->fen = fen;
 
         std::regex whiteSpace("\\s+");
@@ -54,7 +54,7 @@ void Position::LoadFen(std::string fen) {
             for (const char &piecePlacement: piecePlacementTokens[Rank::Rank8 - rank]) {
                 square = GetSquare((Rank)rank, (File)file);
                 if (asciiPiece.find(piecePlacement) != std::string::npos) {
-                    bitboard::SetBit(this->bitboards[CharToPiece.at(piecePlacement)], (Square)square);
+                    bitboard::SetBit(this->bitboards[util::CharToPiece.at(piecePlacement)], (Square)square);
                     file++;
                 } else if (oneToEight.find(piecePlacement) != std::string::npos) {
                     file += piecePlacement - '0';
@@ -94,7 +94,7 @@ void Position::LoadFen(std::string fen) {
         }
 
         if (tokens[Fen::EnPassantTargetSquare] != "-") {
-            this->enpassant = StringToSquare(tokens[Fen::EnPassantTargetSquare]);
+            this->enpassant = util::StringToSquare(tokens[Fen::EnPassantTargetSquare]);
         }
 
         // init occupancy for white
@@ -142,7 +142,7 @@ std::ostream& operator<<(std::ostream &stream, const Position position) {
 
     stream << "Turn: " << ((position.side == Side::White) ? "white" : "black") << std::endl;
     stream << "Enpassant: " << ((position.enpassant != Square::None)
-        ? GetCoordinatesFromSquare(position.enpassant)
+        ? util::GetCoordinatesFromSquare(position.enpassant)
         :"None"
     ) << std::endl;
     stream << "Castle: "
