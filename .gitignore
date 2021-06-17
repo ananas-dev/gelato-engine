@@ -1,1 +1,8 @@
+# Cmake generated files
 build/
+
+# VScode generated files
+.vscode/
+
+# Qt creator generated files
+CMakeLists.txt.user
